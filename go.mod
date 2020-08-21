@@ -3,6 +3,7 @@ module github.com/mimiiiz/timescale-testing
 go 1.14
 
 require (
+	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/jinzhu/gorm v1.9.16
 	github.com/lib/pq v1.1.1

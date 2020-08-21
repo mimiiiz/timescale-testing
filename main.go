@@ -1,11 +1,15 @@
 package main
 
 import (
+	"math/rand"
 	"net/http"
+	"time"
 
+	"github.com/Pallinder/go-randomdata"
 	"github.com/gin-gonic/gin"
 	"github.com/mimiiiz/timescale-testing/database"
 	"github.com/mimiiiz/timescale-testing/handler"
+	"github.com/mimiiiz/timescale-testing/model"
 	"github.com/mimiiiz/timescale-testing/service"
 )
 
@@ -23,7 +27,15 @@ func main() {
 	locationGroup.POST("/", locationHandler.Create())
 	locationGroup.GET("/", locationHandler.List())
 
-	r.Run()
+	conditionService := service.NewConditionService(db)
+	conditionHandler := handler.NewConditionHandler(conditionService)
+	conditionGroup := r.Group("conditions")
+
+	conditionGroup.POST("/", conditionHandler.Create())
+	conditionGroup.GET("/", conditionHandler.List())
+
+	// r.Run()
+	intervalInsertCondition(conditionService)
 
 }
 
@@ -40,5 +52,18 @@ func corsMiddleware() gin.HandlerFunc {
 		}
 
 		c.Next()
+	}
+}
+
+func intervalInsertCondition(s service.ConditionService) {
+	rand.Seed(time.Now().UnixNano())
+	for range time.Tick(30 * time.Second) {
+		con := model.Condition{
+			Time:        time.Now(),
+			DeviceID:    randomdata.SillyName(),
+			Temperature: randomdata.Decimal(-100, 100, 3),
+			Humidity:    randomdata.Decimal(-50, 50, 3),
+		}
+		s.CreateCondition(&con)
 	}
 }
