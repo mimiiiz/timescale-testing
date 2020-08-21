@@ -35,7 +35,7 @@ func main() {
 	conditionGroup.GET("/", conditionHandler.List())
 
 	// r.Run()
-	intervalInsertCondition(conditionService)
+	intervalInsertCondition(conditionService, locationService)
 
 }
 
@@ -55,7 +55,7 @@ func corsMiddleware() gin.HandlerFunc {
 	}
 }
 
-func intervalInsertCondition(s service.ConditionService) {
+func intervalInsertCondition(c service.ConditionService, l service.LocationService) {
 	rand.Seed(time.Now().UnixNano())
 	for range time.Tick(30 * time.Second) {
 		con := model.Condition{
@@ -64,6 +64,13 @@ func intervalInsertCondition(s service.ConditionService) {
 			Temperature: randomdata.Decimal(-100, 100, 3),
 			Humidity:    randomdata.Decimal(-50, 50, 3),
 		}
-		s.CreateCondition(&con)
+		c.CreateCondition(&con)
+
+		loc := model.Location{
+			DeviceID:    randomdata.SillyName(),
+			Location:    randomdata.Country(randomdata.FullCountry),
+			Environment: randomdata.Street(),
+		}
+		l.CreateLocation(&loc)
 	}
 }
