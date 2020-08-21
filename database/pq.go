@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 
+	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/jinzhu/gorm"
@@ -23,6 +24,7 @@ func ConnectDB() *gorm.DB {
 	db, err := gorm.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Error(fmt.Sprintf("Error while connecting to the database: %v", err))
+		return nil
 	}
 	fmt.Println("Successfully connected! DB")
 
